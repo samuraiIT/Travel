@@ -1,0 +1,16 @@
+# Runtime secrets and local Hermes state must never enter Git.
+.env
+.env.*
+!.env.example
+*.secret
+*.local.yaml
+runtime/
+
+# Primary evidence with a booking reference stays local and immutable.
+China/image copy.png
+
+# Python/tooling caches.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/

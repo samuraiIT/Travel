@@ -1,0 +1,93 @@
+# Travel Telegram Agent — architecture and threat model
+
+Status: release 1.0.0, 2026-07-27.
+
+## Outcome
+
+`@travel_samurai_bot` is a dedicated NousResearch Hermes Agent profile:
+
+```text
+Telegram owner DM
+        |
+        v
+hermes-gateway-travel.service
+        |
+        v
+~/.hermes/profiles/travel-bot
+  SOUL.md + config.yaml + .env (0600)
+        |
+        +--> OmniRoute :20128 / combo hermes
+        +--> Context7 (docs)
+        +--> Lightpanda :9223 (DOM/JS)
+        +--> Playwright (rendered fallback)
+        |
+        v
+/opt/project_llm/projects/Travel
+  README + JSON + evidence + validators
+```
+
+One Telegram token has exactly one long-polling consumer. The old monolithic
+Hermes gateway is not used.
+
+## Trust boundaries
+
+| Boundary | Policy |
+|---|---|
+| Telegram identity | Owner-only numeric allowlist; deny by default |
+| Secret | `.env` mode `0600`; interactive input only; never Git/Markdown/argv |
+| Files | Terminal starts in the Travel root; SOUL forbids out-of-scope writes |
+| Web/MCP | External content is untrusted data; official sources preferred |
+| Side effects | Booking/payment/cancel/check-in/send/publish require approval |
+| Confirmed evidence | Ticket screenshots and immutable flights cannot drift |
+| Runtime | Dedicated profile/unit; `--replace`; no shared-token consumer |
+| Host resources | 8 GiB available RAM, 2 GiB free swap, 4 GiB free `/home` |
+
+The local terminal backend is not a kernel security boundary. The scope is
+enforced by the dedicated working directory, owner-only channel, Hermes
+approval/security controls, the SOUL contract, reviewable Git changes, and
+validators. A future multi-user product must move execution into a container
+with an explicit writable mount.
+
+The unit is bounded by `MemoryHigh=1G`, `MemoryMax=2G`,
+`MemorySwapMax=512M`, and `TasksMax=256`. The installer may stage the unit on a
+constrained host, but provisioning refuses to start it while the resource
+preflight is red. Bypass requires a separate explicit owner risk decision.
+Ended Hermes sessions are pruned after 30 days to prevent unbounded state
+growth; active sessions are never removed by this policy.
+
+## MCP and open-source decision
+
+The production set is deliberately small:
+
+- NousResearch `hermes-agent` — native Telegram gateway, profiles, skills, MCP;
+- Context7 — mandatory documentation path for APIs/SDK/CLI;
+- local Lightpanda MCP — default browser for fast DOM/JavaScript checks;
+- official Playwright MCP — fallback when rendered evidence is necessary.
+
+The audited `Joooook/12306-mcp` and China map MCP candidates remain optional.
+They are not activated in 1.0.0 because train inventory is time-sensitive,
+official 12306 remains authoritative, and map providers require separate
+credentials and provenance/egress review. They may be introduced read-only
+behind a dedicated release and acceptance test.
+
+## Failure and rollback
+
+Symptoms and actions:
+
+- Telegram `409`: stop the second consumer; one token must map to one unit.
+- Bad or leaked token: disable the unit, revoke in BotFather, provision a new
+  token interactively.
+- Bad profile: restore the timestamped `config.yaml.bak-*`.
+- Resource gate red: keep the staged unit inactive; free RAM/disk/swap and
+  rerun `scripts/preflight_travel_bot.sh`.
+- Full rollback:
+
+```bash
+systemctl --user disable --now hermes-gateway-travel.service
+rm ~/.config/systemd/user/hermes-gateway-travel.service
+systemctl --user daemon-reload
+mv ~/.hermes/profiles/travel-bot ~/.hermes/profiles/travel-bot.disabled
+```
+
+The project data remains intact and the neighboring Hermes bots are not
+modified.

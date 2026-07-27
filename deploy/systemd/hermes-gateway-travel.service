@@ -1,0 +1,40 @@
+[Unit]
+Description=Hermes Agent Gateway - @travel_samurai_bot (Travel)
+Wants=network-online.target
+After=network-online.target basic.target app.slice home.mount -.mount omniroute.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=/home/samurai/.hermes/profiles/travel-bot
+EnvironmentFile=/home/samurai/.hermes/profiles/travel-bot/.env
+Environment="PATH=/home/samurai/.hermes/hermes-agent/venv/bin:/home/samurai/.hermes/hermes-agent/node_modules/.bin:/usr/bin:/home/samurai/.local/bin:/home/samurai/.npm-global/bin:/usr/local/bin"
+Environment="VIRTUAL_ENV=/home/samurai/.hermes/hermes-agent/venv"
+Environment="HERMES_HOME=/home/samurai/.hermes/profiles/travel-bot"
+Environment="HERMES_DISABLE_MCP_DOCKER=true"
+Environment="HERMES_DISABLE_MCP_HOMEASSISTANT=true"
+Environment="MCP_OMNIROUTE_STARTUP_TIMEOUT=20"
+ExecStart=/home/samurai/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main -p travel-bot gateway run --replace
+Restart=on-failure
+RestartSec=15
+RestartMaxDelaySec=120
+RestartSteps=8
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=210
+TimeoutStartSec=60
+MemoryHigh=1G
+MemoryMax=2G
+MemorySwapMax=512M
+TasksMax=256
+OOMPolicy=stop
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+RestrictSUIDSGID=true
+LockPersonality=true
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

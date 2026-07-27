@@ -1,0 +1,119 @@
+model:
+  default: hermes
+  provider: custom:omni
+  context_length: 65536
+
+agent:
+  max_turns: 100
+  gateway_timeout: 1800
+  restart_drain_timeout: 180
+  api_max_retries: 3
+  task_completion_guidance: true
+  environment_probe: true
+  reasoning_effort: medium
+  verbose: false
+
+terminal:
+  backend: local
+  cwd: /opt/project_llm/projects/Travel
+  timeout: 180
+  persistent_shell: true
+
+skills:
+  external_dirs:
+    - /home/samurai/.agents/skills
+    - /opt/project_llm/.agents/skills
+  template_vars: true
+  inline_shell: false
+  guard_agent_created: true
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  write_approval: true
+  memory_char_limit: 2200
+  user_char_limit: 1375
+
+telegram:
+  reactions: false
+  allow_from:
+    - "5842551033"
+  allowed_chats: ""
+  channel_prompts:
+    "5842551033": >-
+      Follow SOUL.md and /opt/project_llm/projects/Travel/AGENTS.md.
+      Work only in /opt/project_llm/projects/Travel. Use Context7 first for
+      libraries/APIs/CLI, official sources for dynamic facts, Lightpanda then
+      Playwright when rendering is required. Booking, payment, cancellation,
+      check-in, external messages, personal-data submission, Git push/release,
+      runtime changes, deletion, and Confirmed-fact changes require explicit
+      approval in this chat.
+
+approvals:
+  mode: smart
+  timeout: 300
+  cron_mode: deny
+  mcp_reload_confirm: true
+  destructive_slash_confirm: true
+
+security:
+  allow_private_urls: false
+  redact_secrets: true
+  tirith_enabled: true
+  tirith_path: tirith
+  tirith_timeout: 5
+  tirith_fail_open: false
+  allow_lazy_installs: false
+
+gateway:
+  strict: true
+  trust_recent_files: false
+  media_delivery_allow_dirs:
+    - /opt/project_llm/projects/Travel
+
+privacy:
+  redact_pii: true
+
+sessions:
+  auto_prune: true
+  retention_days: 30
+  vacuum_after_prune: true
+  min_interval_hours: 24
+
+mcp_servers:
+  playwright:
+    command: npx
+    args:
+      - -y
+      - "@playwright/mcp@0.0.78"
+      - --browser
+      - chromium
+      - --headless
+      - --isolated
+      - --block-service-workers
+    timeout: 120
+
+tools:
+  tool_search:
+    enabled: auto
+    threshold_pct: 10
+    search_default_limit: 5
+    max_search_limit: 12
+
+toolsets:
+  - hermes-cli
+
+platform_toolsets:
+  telegram:
+    - browser
+    - clarify
+    - code_execution
+    - context_engine
+    - file
+    - memory
+    - session_search
+    - skills
+    - terminal
+    - todo
+    - vision
+    - web
