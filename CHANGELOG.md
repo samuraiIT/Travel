@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.3] - 2026-07-27
+
+### Added
+
+- Persistent 8 GiB low-priority emergency swap reserve on `/opt`.
+
+### Fixed
+
+- Made the restart gate pressure-aware after the host's roughly 60 GiB
+  anonymous working set consumed all swap despite 20 GiB `MemAvailable`:
+  require 2 GiB `SwapFree` or a stricter 12 GiB RAM fallback.
+
 ## [1.0.2] - 2026-07-27
 
 ### Changed

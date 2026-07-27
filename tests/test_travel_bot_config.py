@@ -152,6 +152,7 @@ class TravelBotConfigTests(unittest.TestCase):
         self.assertIn('readonly SWAP_DIR="/opt/travel-swap"', helper)
         self.assertIn('"${SWAP_DIR}/swap-primary.img"', helper)
         self.assertIn('"${SWAP_DIR}/swap-reserve.img"', helper)
+        self.assertIn('"${SWAP_DIR}/swap-emergency.img"', helper)
         self.assertIn('$((4 * 1024 * 1024 * 1024))', helper)
         self.assertIn('$((8 * 1024 * 1024 * 1024))', helper)
         self.assertIn("APPLY=false", helper)
@@ -171,6 +172,26 @@ class TravelBotConfigTests(unittest.TestCase):
         self.assertIn("RequiresMountsFor=/opt", reserve_unit)
         self.assertIn("Priority=0", reserve_unit)
         self.assertIn("WantedBy=swap.target", reserve_unit)
+        emergency_unit = (
+            ROOT / "deploy/systemd/travel-swap-emergency.swap"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "What=/opt/travel-swap/swap-emergency.img", emergency_unit
+        )
+        self.assertIn("RequiresMountsFor=/opt", emergency_unit)
+        self.assertIn("Priority=-1", emergency_unit)
+        self.assertIn("WantedBy=swap.target", emergency_unit)
+        preflight = (
+            ROOT / "scripts/preflight_travel_bot.sh"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "SWAP_FALLBACK_MEM_AVAILABLE_KIB=$((12 * 1024 * 1024))",
+            preflight,
+        )
+        self.assertIn(
+            "mem_available_kib >= SWAP_FALLBACK_MEM_AVAILABLE_KIB",
+            preflight,
+        )
 
 
 if __name__ == "__main__":

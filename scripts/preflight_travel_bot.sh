@@ -3,6 +3,7 @@ set -Eeuo pipefail
 IFS=$'\n\t'
 
 readonly MIN_MEM_AVAILABLE_KIB=$((8 * 1024 * 1024))
+readonly SWAP_FALLBACK_MEM_AVAILABLE_KIB=$((12 * 1024 * 1024))
 readonly MIN_HOME_AVAILABLE_KIB=$((4 * 1024 * 1024))
 readonly RECOMMENDED_SWAP_FREE_KIB=$((2 * 1024 * 1024))
 
@@ -32,8 +33,10 @@ fi
 
 if (( swap_free_kib >= RECOMMENDED_SWAP_FREE_KIB )); then
   pass "SwapFree is at least 2 GiB"
+elif (( mem_available_kib >= SWAP_FALLBACK_MEM_AVAILABLE_KIB )); then
+  pass "SwapFree is below 2 GiB but MemAvailable is at least 12 GiB"
 else
-  fail "SwapFree is below 2 GiB (${swap_free_kib} KiB)"
+  fail "SwapFree is below 2 GiB and MemAvailable is below 12 GiB"
 fi
 
 if systemctl --user is-active --quiet omniroute.service ||

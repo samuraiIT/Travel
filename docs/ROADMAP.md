@@ -30,6 +30,15 @@
 - [x] Restart only the Travel gateway and pass the full verifier.
 - [ ] Owner confirms post-release Telegram wall-clock latency from a fresh DM.
 
+## Release 1.0.3 — durable restart headroom
+
+- [x] Measure repeated swap exhaustion after the model rollout.
+- [x] Preserve the existing RAM/swap/disk gate without a force bypass.
+- [x] Add an 8 GiB low-priority emergency swap device on `/opt`.
+- [x] Add a conservative 12 GiB RAM fallback when cold pages fill all swap.
+- [x] Keep the model, combo, credentials, and neighboring gateways unchanged.
+- [x] Confirm the adaptive gate after a 90-second settling interval.
+
 For reprovisioning after a future token rotation:
 
 ```bash

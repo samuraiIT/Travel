@@ -5,7 +5,7 @@ selectively imports the live `omni` custom provider and the approved MCP
 definitions from an existing local Hermes profile. It never prints their
 credentials and never copies another Telegram token.
 
-Approved MCP set for release 1.0.2:
+Approved MCP set for release 1.0.3:
 
 - `context7` — required for library/API/SDK/CLI documentation;
 - `lightpanda` — low-cost DOM/JavaScript browser at the local MCP service;

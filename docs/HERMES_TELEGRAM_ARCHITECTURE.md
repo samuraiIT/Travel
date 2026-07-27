@@ -41,7 +41,7 @@ Hermes gateway is not used.
 | Side effects | Booking/payment/cancel/check-in/send/publish require approval |
 | Confirmed evidence | Ticket screenshots and immutable flights cannot drift |
 | Runtime | Dedicated profile/unit; `--replace`; no shared-token consumer |
-| Host resources | 8 GiB available RAM, 2 GiB free swap, 4 GiB free `/home` |
+| Host resources | 8 GiB RAM hard minimum; then 2 GiB free swap or 12 GiB RAM fallback; 4 GiB free `/home` |
 
 The local terminal backend is not a kernel security boundary. The scope is
 enforced by the dedicated working directory, owner-only channel, Hermes
@@ -55,6 +55,13 @@ constrained host, but provisioning refuses to start it while the resource
 preflight is red. Bypass requires a separate explicit owner risk decision.
 Ended Hermes sessions are pruned after 30 days to prevent unbounded state
 growth; active sessions are never removed by this policy.
+
+Project-managed swap consists of 4 GiB primary and 8 GiB secondary devices at
+priority `0`, plus an 8 GiB emergency device configured at `-1` (kernel
+auto-allocation, effective `-4` on this host). The last device adds capacity
+after the host's cold anonymous working set consumes normal swap. A full swap
+is accepted only when `MemAvailable` is at least 12 GiB; the 8 GiB RAM minimum
+is never bypassed.
 
 The 1.0.2 prompt surface contains seven explicit Travel skill roots. This keeps
 their complete companion files available on demand while reducing the

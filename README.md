@@ -6,7 +6,7 @@
 Последняя проверка источников: **27.07.2026**. Репозиторий подключён к
 [`samuraiIT/Travel`](https://github.com/samuraiIT/Travel), ветка `master`.
 
-Релиз **1.0.2** запускает owner-only Telegram Travel Agent
+Релиз **1.0.3** запускает owner-only Telegram Travel Agent
 `@travel_samurai_bot` на NousResearch Hermes Agent. Live-профиль использует
 быстрый OmniRoute combo `travel-fast` (Codex Spark → строгий
 `codex-review` fallback) и только семь релевантных Travel skills. Токены и
@@ -291,3 +291,5 @@ Markdown или добавлять в Git.
 
 Model-selection evidence и точные latency/correctness gates:
 [`RELEASE_NOTES_v1.0.2.md`](RELEASE_NOTES_v1.0.2.md).
+Durable resource-headroom patch:
+[`RELEASE_NOTES_v1.0.3.md`](RELEASE_NOTES_v1.0.3.md).

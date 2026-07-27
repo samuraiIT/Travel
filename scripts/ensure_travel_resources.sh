@@ -8,18 +8,22 @@ readonly MIN_HOME_AVAILABLE_KIB=$((4 * 1024 * 1024))
 readonly -a SWAP_FILES=(
   "${SWAP_DIR}/swap-primary.img"
   "${SWAP_DIR}/swap-reserve.img"
+  "${SWAP_DIR}/swap-emergency.img"
 )
 readonly -a SWAP_SIZE_BYTES=(
   $((4 * 1024 * 1024 * 1024))
+  $((8 * 1024 * 1024 * 1024))
   $((8 * 1024 * 1024 * 1024))
 )
 readonly -a SWAP_SIZE_LABELS=(
   "4 GiB"
   "8 GiB"
+  "8 GiB"
 )
 readonly -a UNIT_TEMPLATES=(
   "${PROJECT_ROOT}/deploy/systemd/travel-swapfile.swap"
   "${PROJECT_ROOT}/deploy/systemd/travel-swap-reserve.swap"
+  "${PROJECT_ROOT}/deploy/systemd/travel-swap-emergency.swap"
 )
 
 APPLY=false

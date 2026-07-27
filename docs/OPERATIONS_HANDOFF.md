@@ -1,6 +1,6 @@
 # Travel bot operations handoff
 
-Date: 2026-07-27. Release: 1.0.2.
+Date: 2026-07-27. Release: 1.0.3.
 
 ## Current live state
 
@@ -12,12 +12,15 @@ Date: 2026-07-27. Release: 1.0.2.
   value is never printed or documented.
 - Default model: `travel-fast` through `custom:omni`.
 - Combo: `codex/gpt-5.3-codex-spark` first, strict `codex-review` fallback.
-- Resource units: `opt-travel\x2dswap-swap\x2dprimary.img.swap` and
-  `opt-travel\x2dswap-swap\x2dreserve.img.swap`, enabled and active at 4 GiB
-  and 8 GiB respectively.
+- Resource units: `opt-travel\x2dswap-swap\x2dprimary.img.swap`,
+  `opt-travel\x2dswap-swap\x2dreserve.img.swap`, and
+  `opt-travel\x2dswap-swap\x2demergency.img.swap`, enabled and active at
+  4 GiB, 8 GiB, and 8 GiB respectively. Emergency unit priority is `-1`;
+  the kernel assigned effective priority `-4` on this host.
 - Resource preflight: passed without bypass after bounded cgroup-v2 reclaim;
   the secondary reserve was expanded when the host exhausted the original
-  4 GiB reserve.
+  4 GiB reserve. Hard minimum is 8 GiB RAM; the swap condition is 2 GiB free
+  swap or a stricter 12 GiB available-RAM fallback.
 - Profile permissions: directory `0700`; config, SOUL and `.env` `0600`.
 - Prompt size: 19,353 bytes total; 772-byte skill index (previously 145,226
   and 126,855 bytes).
@@ -47,9 +50,9 @@ Full evidence: [`../RELEASE_NOTES_v1.0.2.md`](../RELEASE_NOTES_v1.0.2.md).
 
 1. Verify RAM, swap and `/home` headroom. The bounded helper uses dry-run by
    default; with `--apply` it removes only the regenerable npm content cache
-   when `/home` is below the gate and maintains a 4 GiB primary plus 8 GiB
-   secondary swapfile under the root-owned `0700` directory
-   `/opt/travel-swap`:
+   when `/home` is below the gate and maintains 4 GiB primary, 8 GiB
+   secondary, and 8 GiB low-priority emergency swapfiles under the root-owned
+   `0700` directory `/opt/travel-swap`:
 
 ```bash
 cd /opt/project_llm/projects/Travel
@@ -145,13 +148,15 @@ Resource-helper rollback:
   set -Eeuo pipefail
   travel_swap_unit='opt-travel\x2dswap-swap\x2dprimary.img.swap'
   travel_reserve_unit='opt-travel\x2dswap-swap\x2dreserve.img.swap'
+  travel_emergency_unit='opt-travel\x2dswap-swap\x2demergency.img.swap'
   travel_rollback_stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 
   sudo systemctl disable --now \
-    "${travel_swap_unit}" "${travel_reserve_unit}"
+    "${travel_swap_unit}" "${travel_reserve_unit}" "${travel_emergency_unit}"
   active_swap_names="$(sudo swapon --show=NAME --noheadings)"
   if grep -Fxq /opt/travel-swap/swap-primary.img <<<"${active_swap_names}" ||
-    grep -Fxq /opt/travel-swap/swap-reserve.img <<<"${active_swap_names}"; then
+    grep -Fxq /opt/travel-swap/swap-reserve.img <<<"${active_swap_names}" ||
+    grep -Fxq /opt/travel-swap/swap-emergency.img <<<"${active_swap_names}"; then
     printf 'ERROR: a Travel swapfile is still active; rollback stopped.\n' >&2
     exit 1
   fi
@@ -160,6 +165,8 @@ Resource-helper rollback:
     "/etc/systemd/system/${travel_swap_unit}.${travel_rollback_stamp}.disabled"
   sudo mv "/etc/systemd/system/${travel_reserve_unit}" \
     "/etc/systemd/system/${travel_reserve_unit}.${travel_rollback_stamp}.disabled"
+  sudo mv "/etc/systemd/system/${travel_emergency_unit}" \
+    "/etc/systemd/system/${travel_emergency_unit}.${travel_rollback_stamp}.disabled"
   sudo mv /opt/travel-swap \
     "/opt/travel-swap.${travel_rollback_stamp}.disabled"
   sudo systemctl daemon-reload
