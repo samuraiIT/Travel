@@ -65,6 +65,15 @@ else
 fi
 
 if [[ -f "${PROFILE_DIR}/config.yaml" ]] &&
+  [[ "$("${HERMES_BIN}" -p travel-bot config get model.default 2>/dev/null)" == \
+    "travel-fast" ]] &&
+  grep -Fxq 'HERMES_MODEL=travel-fast' "${PROFILE_DIR}/.env"; then
+  pass "Travel model is pinned to travel-fast"
+else
+  fail "Travel model is not pinned to travel-fast"
+fi
+
+if [[ -f "${PROFILE_DIR}/config.yaml" ]] &&
   [[ "$("${HERMES_BIN}" -p travel-bot config get terminal.cwd 2>/dev/null)" == \
     "${PROJECT_ROOT}" ]]; then
   pass "terminal cwd is restricted to Travel"

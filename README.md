@@ -6,11 +6,12 @@
 Последняя проверка источников: **27.07.2026**. Репозиторий подключён к
 [`samuraiIT/Travel`](https://github.com/samuraiIT/Travel), ветка `master`.
 
-Релиз **1.0.1** добавляет owner-only Telegram Travel Agent
-`@travel_samurai_bot` на NousResearch Hermes Agent. Токены и другие секреты
-хранятся только во внешнем runtime-профиле и никогда не входят в Git. Patch
-release также добавляет bounded-восстановление `/home` и 8 GiB swap headroom без
-остановки соседних Hermes-сервисов.
+Релиз **1.0.2** запускает owner-only Telegram Travel Agent
+`@travel_samurai_bot` на NousResearch Hermes Agent. Live-профиль использует
+быстрый OmniRoute combo `travel-fast` (Codex Spark → строгий
+`codex-review` fallback) и только семь релевантных Travel skills. Токены и
+другие секреты хранятся только во внешнем runtime-профиле и никогда не входят
+в Git.
 
 > **Главный вывод:** маршрут укладывается в 18 календарных дат и 16 ночей в
 > Китае. Бадалин 13 сентября не является частью обязательного маршрута:
@@ -262,13 +263,15 @@ Research/OSS/MCP/skills matrix:
 Exact live state and activation handoff:
 [`docs/OPERATIONS_HANDOFF.md`](docs/OPERATIONS_HANDOFF.md).
 
-Идемпотентная установка профиля и disabled/inactive unit:
+Идемпотентное обновление профиля; при `--start` активный gateway будет
+перезапущен только после resource/config checks:
 
 ```bash
 /opt/project_llm/projects/Travel/scripts/install_travel_bot.sh
+/opt/project_llm/projects/Travel/scripts/install_travel_bot.sh --start
 ```
 
-После ротации скомпрометированного токена в BotFather выполнить из
+Live unit уже provisioned и active. При следующей ротации токена выполнить из
 интерактивного терминала:
 
 ```bash
@@ -285,3 +288,6 @@ Exact live state and activation handoff:
 принадлежит `@travel_samurai_bot`, запускает `hermes-gateway-travel.service`
 и выполняет полный smoke. Токен нельзя передавать аргументом CLI, писать в
 Markdown или добавлять в Git.
+
+Model-selection evidence и точные latency/correctness gates:
+[`RELEASE_NOTES_v1.0.2.md`](RELEASE_NOTES_v1.0.2.md).

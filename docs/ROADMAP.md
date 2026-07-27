@@ -1,6 +1,6 @@
 # Travel Agents delivery roadmap
 
-## Release 1.0.0 — dedicated owner bot
+## Releases 1.0.0–1.0.1 — dedicated owner bot and resource gate
 
 - [x] Read workspace and project canon; preserve immutable tickets.
 - [x] Audit live Hermes profiles, gateways, service pattern, and OmniRoute.
@@ -11,14 +11,26 @@
 - [x] Add minimal MCP policy and owner-only Telegram allowlist.
 - [x] Add tests, secret scan, itinerary validator, and monitoring hooks.
 - [x] Stage the dedicated profile and disabled/inactive user unit.
-- [x] Add bounded `/home` cache cleanup and persistent 8 GiB `/opt` swap reserve.
-- [ ] Rotate the token disclosed in chat and provision it by hidden TTY input.
+- [x] Add bounded `/home` cache cleanup and persistent `/opt` swap reserve.
+- [x] Rotate the token disclosed in chat and provision it by hidden TTY input.
 - [x] Restore the host resource gate: at least 8 GiB MemAvailable, 2 GiB free
       swap, and 4 GiB free under `/home`.
-- [ ] Complete owner `/start` and real question smoke after rotation.
+- [x] Complete owner `/start` and real-question use after rotation.
 
-The final two checks are deliberately impossible to automate safely from the
-disclosed chat credential. Run:
+## Release 1.0.2 — latency and semantic quality
+
+- [x] Measure the actual model served by `hermes` and production call latency.
+- [x] Benchmark `quick`, `free`, Haiku, GitHub, Gemini, DeepSeek, Hermes,
+      Codex Spark, and `codex-review` paths.
+- [x] Reject fast candidates that fail the real duplicate-deadline test.
+- [x] Create `travel-fast` through Dashboard session + CSRF REST only.
+- [x] Keep `codex-review` strict Codex-only and use it only as fallback.
+- [x] Reduce the skill index to seven complete Travel-relevant roots.
+- [x] Pin runtime config, provider default, and `HERMES_MODEL` consistently.
+- [x] Restart only the Travel gateway and pass the full verifier.
+- [ ] Owner confirms post-release Telegram wall-clock latency from a fresh DM.
+
+For reprovisioning after a future token rotation:
 
 ```bash
 /opt/project_llm/projects/Travel/scripts/preflight_travel_bot.sh

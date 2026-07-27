@@ -12,7 +12,7 @@ search. External pages were treated as untrusted data.
 | [Context7](https://context7.com/) | Required | Current API/SDK/CLI documentation before implementation decisions |
 | [Lightpanda](https://github.com/lightpanda-io/browser) | Default browser MCP | Existing local service, lower resource cost, DOM/JS-first workflow |
 | [Microsoft Playwright MCP](https://github.com/microsoft/playwright-mcp) | Rendered fallback | Official project; pinned `0.0.78`, isolated profile, service workers blocked |
-| OmniRoute `:20128` | Existing `custom:omni` provider | Reuses the live model-routing control plane without changing Codex routing |
+| OmniRoute `:20128` | `travel-fast` via existing `custom:omni` provider | Spark passed real text/tool/deadline gates; `codex-review` is availability fallback; Codex CLI routing stays direct-only |
 
 The Playwright package was pinned from the npm registry on 2026-07-27:
 
@@ -56,9 +56,14 @@ available under `/opt/project_llm/.agents/skills/`:
 2. `travel-concierge` — grounded places/routes and anti-hallucination rules;
 3. `travel-day-optimizer` — conservative timelines, buffers, contingencies;
 4. `china-travel-operations` — workspace orchestration and validator;
-5. `hermes-bot-deploy` — isolated profile, systemd, monitoring and rollback;
+5. `web-agent-navigation` — low-cost DOM-first browser routing;
 6. `augmented-advisory` — evidence/options without replacing human decisions;
 7. `bash-defensive-patterns` — strict, idempotent, secret-safe deploy scripts.
+
+Only these seven complete skill roots are indexed by the live profile. This
+preserves their companion files while avoiding the 126,855-byte all-workspace
+skill index. `hermes-bot-deploy` remains installed workspace-wide for operators
+but is not part of the Travel bot's always-visible runtime set.
 
 The first three skills preserve their upstream `SKILL.md` in `references/`
 instead of pretending deprecated sample tools are live. Their source projects:

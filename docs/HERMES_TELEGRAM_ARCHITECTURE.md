@@ -1,6 +1,6 @@
 # Travel Telegram Agent — architecture and threat model
 
-Status: release 1.0.0, 2026-07-27.
+Status: release 1.0.2, 2026-07-27.
 
 ## Outcome
 
@@ -16,7 +16,8 @@ hermes-gateway-travel.service
 ~/.hermes/profiles/travel-bot
   SOUL.md + config.yaml + .env (0600)
         |
-        +--> OmniRoute :20128 / combo hermes
+        +--> OmniRoute :20128 / combo travel-fast
+        |      Spark -> codex-review availability fallback
         +--> Context7 (docs)
         +--> Lightpanda :9223 (DOM/JS)
         +--> Playwright (rendered fallback)
@@ -55,6 +56,12 @@ preflight is red. Bypass requires a separate explicit owner risk decision.
 Ended Hermes sessions are pruned after 30 days to prevent unbounded state
 growth; active sessions are never removed by this policy.
 
+The 1.0.2 prompt surface contains seven explicit Travel skill roots. This keeps
+their complete companion files available on demand while reducing the
+always-on skill index from 126,855 to 772 bytes. The `travel-fast` combo was
+created through Dashboard session-auth REST and keeps `codex-review` unchanged
+as a strict Codex-only fallback.
+
 ## MCP and open-source decision
 
 The production set is deliberately small:
@@ -65,7 +72,7 @@ The production set is deliberately small:
 - official Playwright MCP — fallback when rendered evidence is necessary.
 
 The audited `Joooook/12306-mcp` and China map MCP candidates remain optional.
-They are not activated in 1.0.0 because train inventory is time-sensitive,
+They are not activated in 1.0.2 because train inventory is time-sensitive,
 official 12306 remains authoritative, and map providers require separate
 credentials and provenance/egress review. They may be introduced read-only
 behind a dedicated release and acceptance test.

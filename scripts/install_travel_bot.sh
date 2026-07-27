@@ -13,6 +13,7 @@ readonly UNIT_NAME="hermes-gateway-travel.service"
 readonly UNIT_SOURCE="${PROJECT_ROOT}/deploy/systemd/${UNIT_NAME}"
 readonly UNIT_TARGET="${HOME}/.config/systemd/user/${UNIT_NAME}"
 readonly OWNER_ID="5842551033"
+readonly TRAVEL_DEFAULT_MODEL="travel-fast"
 
 START_NOW=false
 if [[ "${1:-}" == "--start" ]]; then
@@ -83,7 +84,7 @@ set_env_key() {
   mv -f "${temp_file}" "${env_file}"
 }
 
-set_env_key "HERMES_MODEL" "hermes"
+set_env_key "HERMES_MODEL" "${TRAVEL_DEFAULT_MODEL}"
 set_env_key "HERMES_PROVIDER" "custom:omni"
 set_env_key "OPENAI_API_BASE" "http://127.0.0.1:20128/v1"
 set_env_key "TELEGRAM_ALLOWED_USERS" "${OWNER_ID}"
@@ -105,7 +106,12 @@ if [[ "${START_NOW}" == true ]]; then
     exit 2
   fi
   "${PROJECT_ROOT}/scripts/preflight_travel_bot.sh"
-  systemctl --user enable --now "${UNIT_NAME}"
+  systemctl --user enable "${UNIT_NAME}"
+  if systemctl --user is-active --quiet "${UNIT_NAME}"; then
+    systemctl --user restart "${UNIT_NAME}"
+  else
+    systemctl --user start "${UNIT_NAME}"
+  fi
 else
   if ! grep -Eq '^TELEGRAM_BOT_TOKEN=.+$' "${env_file}"; then
     # Enabled units are discovered by the shared healthcheck and can be

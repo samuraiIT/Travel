@@ -2,6 +2,29 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.2] - 2026-07-27
+
+### Changed
+
+- Switched the live Travel agent from the overloaded `hermes` lane to the
+  dedicated `travel-fast` OmniRoute combo: Codex Spark first and the strict
+  Codex-only `codex-review` combo as availability fallback.
+- Reduced the always-on Hermes skill index from all workspace skills to seven
+  Travel-relevant skill roots while preserving every skill's companion files.
+- Added a deterministic `days[].deadline` rule and synchronized the generated
+  provider default with `model.default`.
+- Expanded the secondary Travel swap reserve from 4 GiB to 8 GiB after the
+  host exhausted the original reserve during the rollout.
+
+### Fixed
+
+- The installer now restarts an already-running Travel gateway after a
+  configuration change instead of treating `enable --now` as a reload.
+- The verifier now fails unless both the runtime config and environment pin
+  `travel-fast`.
+- A semantically wrong but superficially fast model can no longer pass release
+  acceptance: the live smoke must preserve duplicate deadlines and statuses.
+
 ## [1.0.1] - 2026-07-27
 
 ### Added

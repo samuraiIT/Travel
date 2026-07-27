@@ -59,6 +59,19 @@ def render(source: dict, overlay: dict) -> dict:
         "mcp_servers": select_mcps(source),
     }
     rendered = deep_merge(base, overlay)
+    model_default = rendered.get("model", {}).get("default")
+    if not isinstance(model_default, str) or not model_default:
+        raise ValueError("model.default must be a non-empty string")
+    omni_provider = rendered["custom_providers"][0]
+    provider_models = omni_provider.get("models")
+    if (
+        not isinstance(provider_models, dict)
+        or model_default not in provider_models
+    ):
+        raise ValueError(
+            f"omni provider does not advertise required model {model_default!r}"
+        )
+    omni_provider["model"] = model_default
     if Path(rendered["terminal"]["cwd"]).resolve() != Path(
         "/opt/project_llm/projects/Travel"
     ):

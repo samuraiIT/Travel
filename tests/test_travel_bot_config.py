@@ -32,7 +32,12 @@ class TravelBotConfigTests(unittest.TestCase):
                     "api_key": "local-test-secret",
                     "base_url": "http://127.0.0.1:20128/v1",
                     "model": "hermes",
-                    "models": {"hermes": {}},
+                    "models": {
+                        "hermes": {},
+                        "quick": {},
+                        "travel-fast": {},
+                        "codex-review": {},
+                    },
                 },
             ],
             "mcp_servers": {
@@ -54,6 +59,15 @@ class TravelBotConfigTests(unittest.TestCase):
             {"context7", "lightpanda", "playwright"},
         )
         self.assertNotIn("unrelated", rendered["mcp_servers"])
+        self.assertEqual(rendered["model"]["default"], "travel-fast")
+        self.assertEqual(
+            rendered["custom_providers"][0]["model"], "travel-fast"
+        )
+
+    def test_renderer_rejects_unadvertised_default_model(self) -> None:
+        self.source["custom_providers"][1]["models"].pop("travel-fast")
+        with self.assertRaisesRegex(ValueError, "does not advertise"):
+            MODULE.render(self.source, self.overlay)
 
     def test_owner_only_and_project_scope(self) -> None:
         rendered = MODULE.render(self.source, self.overlay)
@@ -68,6 +82,18 @@ class TravelBotConfigTests(unittest.TestCase):
         self.assertEqual(rendered["approvals"]["cron_mode"], "deny")
         self.assertTrue(rendered["sessions"]["auto_prune"])
         self.assertEqual(rendered["sessions"]["retention_days"], 30)
+        self.assertEqual(
+            rendered["skills"]["external_dirs"],
+            [
+                "/opt/project_llm/.agents/skills/travel-agent-skill",
+                "/opt/project_llm/.agents/skills/travel-concierge",
+                "/opt/project_llm/.agents/skills/travel-day-optimizer",
+                "/opt/project_llm/.agents/skills/china-travel-operations",
+                "/opt/project_llm/.agents/skills/web-agent-navigation",
+                "/opt/project_llm/.agents/skills/augmented-advisory",
+                "/opt/project_llm/.agents/skills/bash-defensive-patterns",
+            ],
+        )
         playwright_args = rendered["mcp_servers"]["playwright"]["args"]
         self.assertIn("@playwright/mcp@0.0.78", playwright_args)
         self.assertIn("--isolated", playwright_args)
@@ -87,6 +113,7 @@ class TravelBotConfigTests(unittest.TestCase):
             "Context7",
             "Lightpanda",
             "Playwright",
+            "days[].deadline",
         ):
             self.assertIn(required, prompt)
 
@@ -96,6 +123,11 @@ class TravelBotConfigTests(unittest.TestCase):
         )
         self.assertIn('$1 != "TELEGRAM_BOT_TOKEN"', installer)
         self.assertIn('profile_created=true', installer)
+        self.assertIn('readonly TRAVEL_DEFAULT_MODEL="travel-fast"', installer)
+        self.assertIn(
+            'set_env_key "HERMES_MODEL" "${TRAVEL_DEFAULT_MODEL}"', installer
+        )
+        self.assertIn('systemctl --user restart "${UNIT_NAME}"', installer)
 
     def test_systemd_unit_has_resource_guardrails(self) -> None:
         unit = (
@@ -120,6 +152,8 @@ class TravelBotConfigTests(unittest.TestCase):
         self.assertIn('readonly SWAP_DIR="/opt/travel-swap"', helper)
         self.assertIn('"${SWAP_DIR}/swap-primary.img"', helper)
         self.assertIn('"${SWAP_DIR}/swap-reserve.img"', helper)
+        self.assertIn('$((4 * 1024 * 1024 * 1024))', helper)
+        self.assertIn('$((8 * 1024 * 1024 * 1024))', helper)
         self.assertIn("APPLY=false", helper)
         self.assertIn('if [[ "${APPLY}" != true ]]', helper)
         self.assertIn("npm cache clean --force", helper)

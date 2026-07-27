@@ -1,5 +1,5 @@
 model:
-  default: hermes
+  default: travel-fast
   provider: custom:omni
   context_length: 65536
 
@@ -21,8 +21,13 @@ terminal:
 
 skills:
   external_dirs:
-    - /home/samurai/.agents/skills
-    - /opt/project_llm/.agents/skills
+    - /opt/project_llm/.agents/skills/travel-agent-skill
+    - /opt/project_llm/.agents/skills/travel-concierge
+    - /opt/project_llm/.agents/skills/travel-day-optimizer
+    - /opt/project_llm/.agents/skills/china-travel-operations
+    - /opt/project_llm/.agents/skills/web-agent-navigation
+    - /opt/project_llm/.agents/skills/augmented-advisory
+    - /opt/project_llm/.agents/skills/bash-defensive-patterns
   template_vars: true
   inline_shell: false
   guard_agent_created: true

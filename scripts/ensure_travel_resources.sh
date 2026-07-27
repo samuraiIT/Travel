@@ -4,11 +4,18 @@ IFS=$'\n\t'
 
 readonly PROJECT_ROOT="/opt/project_llm/projects/Travel"
 readonly SWAP_DIR="/opt/travel-swap"
-readonly SWAP_SIZE_BYTES=$((4 * 1024 * 1024 * 1024))
 readonly MIN_HOME_AVAILABLE_KIB=$((4 * 1024 * 1024))
 readonly -a SWAP_FILES=(
   "${SWAP_DIR}/swap-primary.img"
   "${SWAP_DIR}/swap-reserve.img"
+)
+readonly -a SWAP_SIZE_BYTES=(
+  $((4 * 1024 * 1024 * 1024))
+  $((8 * 1024 * 1024 * 1024))
+)
+readonly -a SWAP_SIZE_LABELS=(
+  "4 GiB"
+  "8 GiB"
 )
 readonly -a UNIT_TEMPLATES=(
   "${PROJECT_ROOT}/deploy/systemd/travel-swapfile.swap"
@@ -58,10 +65,12 @@ if [[ "${APPLY}" != true ]]; then
       "DRY RUN: would preserve npm cache because /home satisfies the gate."
   fi
   printf 'DRY RUN: would ensure %s is root:root 0700.\n' "${SWAP_DIR}"
-  for swap_file in "${SWAP_FILES[@]}"; do
+  for index in "${!SWAP_FILES[@]}"; do
+    swap_file="${SWAP_FILES[${index}]}"
+    swap_size_label="${SWAP_SIZE_LABELS[${index}]}"
     unit_name="$(systemd-escape --path --suffix=swap "${swap_file}")"
     printf '%s\n' \
-      "DRY RUN: would ensure ${swap_file} is 4 GiB and valid." \
+      "DRY RUN: would ensure ${swap_file} is ${swap_size_label} and valid." \
       "DRY RUN: would install and enable /etc/systemd/system/${unit_name}."
   done
   printf 'Re-run with --apply to execute.\n'
@@ -107,6 +116,7 @@ fi
 
 for index in "${!SWAP_FILES[@]}"; do
   swap_file="${SWAP_FILES[${index}]}"
+  swap_size_bytes="${SWAP_SIZE_BYTES[${index}]}"
   unit_template="${UNIT_TEMPLATES[${index}]}"
   unit_name="$(systemd-escape --path --suffix=swap "${swap_file}")"
   unit_target="/etc/systemd/system/${unit_name}"
@@ -117,14 +127,14 @@ for index in "${!SWAP_FILES[@]}"; do
     exit 1
   elif ! sudo -n test -e "${swap_file}"; then
     sudo -n install -o root -g root -m 600 /dev/null "${swap_file}"
-    if ! sudo -n fallocate -l "${SWAP_SIZE_BYTES}" "${swap_file}"; then
+    if ! sudo -n fallocate -l "${swap_size_bytes}" "${swap_file}"; then
       sudo -n rm -f -- "${swap_file}"
       exit 1
     fi
     allocated_bytes="$(sudo -n du -B1 "${swap_file}" | awk '{ print $1 }')"
-    if (( allocated_bytes < SWAP_SIZE_BYTES )); then
+    if (( allocated_bytes < swap_size_bytes )); then
       printf 'ERROR: swapfile is sparse (%s of %s bytes allocated).\n' \
-        "${allocated_bytes}" "${SWAP_SIZE_BYTES}" >&2
+        "${allocated_bytes}" "${swap_size_bytes}" >&2
       sudo -n rm -f -- "${swap_file}"
       exit 1
     fi
@@ -143,7 +153,7 @@ for index in "${!SWAP_FILES[@]}"; do
     swap_type="$(sudo -n blkid -p -s TYPE -o value "${swap_file}" || true)"
     if [[ "${owner_mode}" != "root:root 600" ]] ||
       [[ "${swap_type}" != "swap" ]] ||
-      (( size_bytes != SWAP_SIZE_BYTES )); then
+      (( size_bytes != swap_size_bytes )); then
       printf '%s\n' \
         "ERROR: existing swap target has unexpected owner/mode/size/type:" \
         "${swap_file}" >&2
