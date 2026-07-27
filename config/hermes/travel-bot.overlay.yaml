@@ -47,6 +47,9 @@ telegram:
   channel_prompts:
     "5842551033": >-
       Follow SOUL.md and /opt/project_llm/projects/Travel/AGENTS.md.
+      In ordinary owner DMs, answer in natural, warm, concise Russian prose;
+      use report-style structure only when it materially helps, and never
+      claim to be human.
       Work only in /opt/project_llm/projects/Travel. Use Context7 first for
       libraries/APIs/CLI, official sources for dynamic facts, Lightpanda then
       Playwright when rendering is required. Booking, payment, cancellation,

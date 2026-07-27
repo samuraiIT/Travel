@@ -1,6 +1,6 @@
 # Travel Telegram Agent — architecture and threat model
 
-Status: release 1.0.2, 2026-07-27.
+Status: release 1.0.4, 2026-07-27.
 
 ## Outcome
 
@@ -69,6 +69,26 @@ always-on skill index from 126,855 to 772 bytes. The `travel-fast` combo was
 created through Dashboard session-auth REST and keeps `codex-review` unchanged
 as a strict Codex-only fallback.
 
+## Conversation UX layer
+
+Hermes prompt assembly keeps responsibilities separate:
+
+- `SOUL.md` owns the durable voice: calm, attentive, practical, concise, and
+  explicitly AI;
+- `AGENTS.md` owns project facts and operational constraints;
+- the owner `telegram.channel_prompts` entry is a short per-chat overlay;
+- skills remain progressive-disclosure knowledge rather than an always-on
+  personality payload.
+
+For one to three facts the default is short prose. Two compact
+`Confirmed`/`Book` groups are allowed when the owner explicitly asks to
+separate statuses. Internal sorting, JSON field names, roles, tool calls,
+automatic `✅`, and duplicated summaries are not user-facing output.
+
+No extra humanizer MCP or runtime skill was added. This preserves the
+seven-skill index, tool attack surface, model route, and latency envelope.
+The SOUL is 12,941 bytes / 7,818 characters.
+
 ## MCP and open-source decision
 
 The production set is deliberately small:
@@ -79,7 +99,7 @@ The production set is deliberately small:
 - official Playwright MCP — fallback when rendered evidence is necessary.
 
 The audited `Joooook/12306-mcp` and China map MCP candidates remain optional.
-They are not activated in 1.0.2 because train inventory is time-sensitive,
+They are not activated in 1.0.4 because train inventory is time-sensitive,
 official 12306 remains authoritative, and map providers require separate
 credentials and provenance/egress review. They may be introduced read-only
 behind a dedicated release and acceptance test.

@@ -1,6 +1,6 @@
 # Travel bot operations handoff
 
-Date: 2026-07-27. Release: 1.0.3.
+Date: 2026-07-27. Release: 1.0.4.
 
 ## Current live state
 
@@ -22,9 +22,11 @@ Date: 2026-07-27. Release: 1.0.3.
   4 GiB reserve. Hard minimum is 8 GiB RAM; the swap condition is 2 GiB free
   swap or a stricter 12 GiB available-RAM fallback.
 - Profile permissions: directory `0700`; config, SOUL and `.env` `0600`.
-- Prompt size: 19,353 bytes total; 772-byte skill index (previously 145,226
-  and 126,855 bytes).
-- Model smoke: exact three-deadline answer through the live default profile.
+- SOUL: 12,941 bytes / 7,818 characters; skill index remains 772 bytes.
+- Conversation contract: natural concise Russian, transparent AI identity,
+  contextual structure, no internal method narration or duplicated summaries.
+- Model smokes: grounded deadline answer passed the semantic/style evaluator;
+  greeting and Badaling recommendation were concise and conversational.
 - MCP allowlist: `context7`, `lightpanda`, `playwright`.
 - External skill allowlist: seven complete Travel/operations skill roots.
 - Approval policy: `smart`, 300 seconds, cron dangerous commands denied.
@@ -34,6 +36,11 @@ Date: 2026-07-27. Release: 1.0.3.
 No direct OmniRoute SQLite write was used. Receiver model pickers/configs were
 synchronized without globally restarting Hermes; only the Travel gateway was
 restarted for the live switch.
+
+Release 1.0.4 did not mutate OmniRoute. It used the existing combo and restarted
+only `hermes-gateway-travel.service` through the backup-producing installer.
+All observed successful golden-set calls were HTTP 200 and served
+`gpt-5.3-codex-spark`; `codex-review` was not needed.
 
 ## Model decision
 
@@ -94,20 +101,25 @@ Provisioning:
 отдели Confirmed от Book и ничего не бронируй.
 ```
 
-5. Confirm that the answer includes both `2026-07-31` hotel rows followed by
-`2026-08-20 | Book | official 12306 ticket`, changes nothing, and that a
-dangerous command produces an inline approval prompt.
+5. Confirm that the answer includes both 31 July hotel rows followed by the
+20 August `Book` item, changes nothing, and sounds like a short Telegram reply:
+no JSON field dump, sorting narration, duplicated status recap, or automatic
+`✅`. A dangerous command must still produce an inline approval prompt.
 
 ## Verification evidence
 
 Green:
 
 - itinerary validator: 18 days, 16 China nights, 5 immutable flights;
-- 7 profile/unit/prompt/resource/model unit tests;
+- 20 profile/unit/prompt/resource/model/conversation unit tests;
 - live resource preflight after bounded remediation;
 - direct `travel-fast` text/native-tool/deadline gates;
-- full default-profile deadline smoke: exact answer in 24.7 seconds cold;
-- prompt-size reduction from 145,226 to 19,353 bytes;
+- live deadline response passed `scripts/evaluate_travel_reply.py`;
+- greeting smoke: 15.0 seconds wall-clock;
+- Badaling short-advice smoke: 26.5 seconds wall-clock;
+- all successful golden calls served Codex Spark with HTTP 200 and no fallback;
+- SOUL: 12,941 bytes / 7,818 characters, below the Hermes character cap;
+- prompt remains far below the pre-1.0.2 145,226-byte baseline;
 - Hermes config v33 and doctor: no active security advisories;
 - MCP security: no suspicious stdio commands;
 - Bandit/Semgrep/Gitleaks security scans after the one low test-only assert was

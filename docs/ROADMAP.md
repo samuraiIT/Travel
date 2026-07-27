@@ -39,6 +39,23 @@
 - [x] Keep the model, combo, credentials, and neighboring gateways unchanged.
 - [x] Confirm the adaptive gate after a 90-second settling interval.
 
+## Release 1.0.4 — human conversation UX
+
+- [x] Diagnose the robotic answer as harness D3/D6, not a model-routing issue.
+- [x] Verify Hermes SOUL, channel-prompt, skills, and Telegram behavior through
+      Context7 before editing.
+- [x] Research primary conversation-design guidance and open-source skills;
+      reject unsafe impersonation and auto-install patterns.
+- [x] Add Conversation Designer, Prompt/Persona, Safety/Trust, Conversation QA,
+      and Release/Observability roles to an executable release prompt.
+- [x] Replace unconditional report formatting with a compact contextual voice.
+- [x] Preserve transparent AI identity and every booking/payment/data approval.
+- [x] Add semantic/style regression gates for the real duplicate-deadline case.
+- [x] Deploy through the backup-producing installer and restart only Travel.
+- [x] Pass 20 unit tests, itinerary validation, full runtime verifier, and live
+      deadline/greeting/Badaling golden prompts.
+- [x] Confirm successful calls use `travel-fast` → Codex Spark without fallback.
+
 For reprovisioning after a future token rotation:
 
 ```bash

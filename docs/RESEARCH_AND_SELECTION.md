@@ -37,11 +37,15 @@ Future activation is read-only first and requires a separate release.
 
 ## Selected roles
 
+- Conversation Designer & UX Writer;
+- Prompt & Persona Engineer;
 - China Travel Operations Lead;
 - Rail & Airport Operations Planner;
 - China Grounding Researcher;
 - Budget & Booking Controller;
 - Travel Risk Manager;
+- Safety & Trust Reviewer;
+- Conversation QA Engineer;
 - Release & Validation Engineer.
 
 The role contract is executable in
@@ -91,3 +95,43 @@ commands are assessed and routed to Telegram approval. Cron dangerous commands
 fail closed. Booking/payment/external-send gates are additionally enforced by
 the SOUL contract because no generic command detector can infer every business
 side effect.
+
+## Release 1.0.4 conversation UX research
+
+Context7 resolved the current high-reputation Hermes documentation as
+[`/nousresearch/hermes-agent`](https://github.com/NousResearch/hermes-agent).
+Its prompt-assembly and personality documentation confirms that `SOUL.md` is
+the durable identity layer, project context is separate, skills are loaded by
+progressive disclosure, and Telegram channel prompts are per-channel overlays:
+
+- [Hermes prompt assembly](https://github.com/NousResearch/hermes-agent/blob/main/website/docs/developer-guide/prompt-assembly.md);
+- [Hermes personality](https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/features/personality.md);
+- [Hermes Telegram configuration](https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/messaging/telegram.md).
+
+Primary conversation-design guidance converged on the same implementation:
+truthful identity, brevity, relevance, plain language, contextual tone, and
+varied but fact-stable phrasing:
+
+- [Google Conversation Design](https://developers.google.com/assistant/conversation-design/learn-about-conversation);
+- [Google conversational language](https://developers.google.com/assistant/conversation-design/language);
+- [Microsoft writing for bots](https://learn.microsoft.com/en-us/style-guide/chatbots-virtual-agents/writing-bots);
+- [OpenAI prompt personalities](https://developers.openai.com/cookbook/examples/gpt-5/prompt_personalities).
+
+Design-time skills and projects reviewed:
+
+- workspace `harness-optimization` localized the problem to D3/D6;
+- workspace `augmented-advisory` preserved evidence and human decision-making;
+- [content-designer/ux-writing-skill](https://github.com/content-designer/ux-writing-skill)
+  was a useful UX-writing reference but was not added to every runtime turn;
+- [iamhumans](https://github.com/hoainho/iamhumans) and generic humanizers were
+  rejected for production because impersonation-oriented wording, emotional
+  overreach, or auto-install behavior can undermine trust and supply-chain
+  controls;
+- [Promptfoo](https://github.com/promptfoo/promptfoo) remains an optional
+  future evaluator if the golden set grows beyond deterministic local gates.
+
+No new MCP was necessary. Firecrawl was attempted first but returned HTTP 401,
+so public research continued through Exa and primary sources. Lightpanda and
+Playwright were not invoked because the selected sources were available as
+static documentation; avoiding unnecessary browser rendering reduced scope
+and resource use.

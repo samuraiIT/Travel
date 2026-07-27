@@ -117,6 +117,27 @@ class TravelBotConfigTests(unittest.TestCase):
         ):
             self.assertIn(required, prompt)
 
+    def test_prompt_contains_conversational_voice_contract(self) -> None:
+        prompt = (ROOT / "prompts/TRAVEL_TELEGRAM_AGENT.md").read_text(
+            encoding="utf-8"
+        )
+        for required in (
+            "Не выдавай себя за человека",
+            "Для простого запроса",
+            "2–5 предложений",
+            "Не начинай шаблонами",
+            "Не ставь `✅` автоматически",
+            "не ослабляет точность",
+            "один короткий уточняющий вопрос",
+        ):
+            self.assertIn(required, prompt)
+        self.assertNotIn("Сначала дай короткий verdict", prompt)
+
+    def test_telegram_overlay_reinforces_natural_ai_voice(self) -> None:
+        channel_prompt = self.overlay["telegram"]["channel_prompts"]["5842551033"]
+        self.assertIn("natural, warm, concise Russian prose", channel_prompt)
+        self.assertIn("never claim to be human", channel_prompt)
+
     def test_installer_scrubs_inherited_telegram_token(self) -> None:
         installer = (ROOT / "scripts/install_travel_bot.sh").read_text(
             encoding="utf-8"

@@ -6,12 +6,13 @@
 Последняя проверка источников: **27.07.2026**. Репозиторий подключён к
 [`samuraiIT/Travel`](https://github.com/samuraiIT/Travel), ветка `master`.
 
-Релиз **1.0.3** запускает owner-only Telegram Travel Agent
+Релиз **1.0.4** запускает owner-only Telegram Travel Agent
 `@travel_samurai_bot` на NousResearch Hermes Agent. Live-профиль использует
 быстрый OmniRoute combo `travel-fast` (Codex Spark → строгий
-`codex-review` fallback) и только семь релевантных Travel skills. Токены и
-другие секреты хранятся только во внешнем runtime-профиле и никогда не входят
-в Git.
+`codex-review` fallback) и только семь релевантных Travel skills. SOUL задаёт
+естественный, короткий и контекстный Telegram-диалог без притворства
+человеком; safety и approval gates не изменены. Токены и другие секреты
+хранятся только во внешнем runtime-профиле и никогда не входят в Git.
 
 > **Главный вывод:** маршрут укладывается в 18 календарных дат и 16 ночей в
 > Китае. Бадалин 13 сентября не является частью обязательного маршрута:
@@ -293,3 +294,5 @@ Model-selection evidence и точные latency/correctness gates:
 [`RELEASE_NOTES_v1.0.2.md`](RELEASE_NOTES_v1.0.2.md).
 Durable resource-headroom patch:
 [`RELEASE_NOTES_v1.0.3.md`](RELEASE_NOTES_v1.0.3.md).
+Conversation UX release and live golden-set evidence:
+[`RELEASE_NOTES_v1.0.4.md`](RELEASE_NOTES_v1.0.4.md).

@@ -2,6 +2,34 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.4] - 2026-07-27
+
+### Added
+
+- Human-centered Telegram voice contract in the Travel SOUL with transparent
+  AI identity, context-sensitive warmth, compact formatting, and grounded
+  first-person language.
+- Executable conversation-design release prompt with selected roles, research
+  order, golden prompts, safety constraints, and acceptance gates.
+- Deterministic deadline-reply evaluator plus regression fixtures for exact
+  date/item/status associations, contradictions, repetition, AI identity,
+  robotic field dumps, method narration, and justified compact status grouping.
+
+### Changed
+
+- Replaced the unconditional `verdict`/report response rule with a
+  task-proportional conversation contract.
+- Simple local fact reads now avoid unnecessary multi-step travel workflows
+  and hide internal sorting, JSON fields, roles, and tool narration.
+- Telegram owner overlay now reinforces natural concise Russian while
+  preserving explicit AI identity and every existing approval gate.
+
+### Security
+
+- No new runtime MCP or third-party humanizer skill was installed. The live
+  allowlists, owner boundary, model route, credentials, and external-action
+  approvals are unchanged.
+
 ## [1.0.3] - 2026-07-27
 
 ### Added
