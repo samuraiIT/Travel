@@ -6,9 +6,11 @@
 Последняя проверка источников: **27.07.2026**. Репозиторий подключён к
 [`samuraiIT/Travel`](https://github.com/samuraiIT/Travel), ветка `master`.
 
-Релиз **1.0.0** добавляет owner-only Telegram Travel Agent
+Релиз **1.0.1** добавляет owner-only Telegram Travel Agent
 `@travel_samurai_bot` на NousResearch Hermes Agent. Токены и другие секреты
-хранятся только во внешнем runtime-профиле и никогда не входят в Git.
+хранятся только во внешнем runtime-профиле и никогда не входят в Git. Patch
+release также добавляет bounded-восстановление `/home` и 8 GiB swap headroom без
+остановки соседних Hermes-сервисов.
 
 > **Главный вывод:** маршрут укладывается в 18 календарных дат и 16 ночей в
 > Китае. Бадалин 13 сентября не является частью обязательного маршрута:
@@ -270,9 +272,14 @@ Exact live state and activation handoff:
 интерактивного терминала:
 
 ```bash
+/opt/project_llm/projects/Travel/scripts/ensure_travel_resources.sh
 /opt/project_llm/projects/Travel/scripts/preflight_travel_bot.sh
 /opt/project_llm/projects/Travel/scripts/provision_travel_bot.sh
 ```
+
+Если dry-run resource helper показывает недостаток `/home` или swap, применить
+его один раз с `--apply`, затем снова запустить preflight. Gate не обходить без
+отдельного owner risk decision.
 
 Скрипт скрыто читает новый токен, проверяет через Telegram `getMe`, что он
 принадлежит `@travel_samurai_bot`, запускает `hermes-gateway-travel.service`

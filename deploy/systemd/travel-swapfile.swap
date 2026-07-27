@@ -1,0 +1,14 @@
+[Unit]
+Description=Travel Hermes resource reserve swapfile
+Documentation=file:/opt/project_llm/projects/Travel/docs/OPERATIONS_HANDOFF.md
+RequiresMountsFor=/opt
+ConditionPathExists=/opt/travel-swap/swap-primary.img
+Before=swap.target
+
+[Swap]
+What=/opt/travel-swap/swap-primary.img
+Priority=0
+TimeoutSec=90s
+
+[Install]
+WantedBy=swap.target

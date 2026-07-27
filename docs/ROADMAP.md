@@ -11,8 +11,9 @@
 - [x] Add minimal MCP policy and owner-only Telegram allowlist.
 - [x] Add tests, secret scan, itinerary validator, and monitoring hooks.
 - [x] Stage the dedicated profile and disabled/inactive user unit.
+- [x] Add bounded `/home` cache cleanup and persistent 8 GiB `/opt` swap reserve.
 - [ ] Rotate the token disclosed in chat and provision it by hidden TTY input.
-- [ ] Restore the host resource gate: at least 8 GiB MemAvailable, 2 GiB free
+- [x] Restore the host resource gate: at least 8 GiB MemAvailable, 2 GiB free
       swap, and 4 GiB free under `/home`.
 - [ ] Complete owner `/start` and real question smoke after rotation.
 

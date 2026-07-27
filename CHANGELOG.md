@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.1] - 2026-07-27
+
+### Added
+
+- Defensive host-resource remediation helper with dry-run/apply modes.
+- Two persistent 4 GiB `/opt` swap units and documented rollback.
+- Regenerable npm content-cache cleanup to restore `/home` headroom.
+- Root-owned swap directory plus regular-file and swap-signature validation.
+
 ## [1.0.0] - 2026-07-27
 
 ### Added

@@ -110,6 +110,34 @@ class TravelBotConfigTests(unittest.TestCase):
         ):
             self.assertIn(required, unit)
 
+    def test_resource_helper_is_bounded_and_dry_run_first(self) -> None:
+        helper = (ROOT / "scripts/ensure_travel_resources.sh").read_text(
+            encoding="utf-8"
+        )
+        swap_unit = (
+            ROOT / "deploy/systemd/travel-swapfile.swap"
+        ).read_text(encoding="utf-8")
+        self.assertIn('readonly SWAP_DIR="/opt/travel-swap"', helper)
+        self.assertIn('"${SWAP_DIR}/swap-primary.img"', helper)
+        self.assertIn('"${SWAP_DIR}/swap-reserve.img"', helper)
+        self.assertIn("APPLY=false", helper)
+        self.assertIn('if [[ "${APPLY}" != true ]]', helper)
+        self.assertIn("npm cache clean --force", helper)
+        self.assertNotIn("rm -rf /home", helper)
+        self.assertIn('sudo -n test -L "${swap_file}"', helper)
+        self.assertIn('swap_type="$(sudo -n blkid', helper)
+        self.assertIn("What=/opt/travel-swap/swap-primary.img", swap_unit)
+        self.assertIn("RequiresMountsFor=/opt", swap_unit)
+        self.assertIn("Priority=0", swap_unit)
+        self.assertIn("WantedBy=swap.target", swap_unit)
+        reserve_unit = (
+            ROOT / "deploy/systemd/travel-swap-reserve.swap"
+        ).read_text(encoding="utf-8")
+        self.assertIn("What=/opt/travel-swap/swap-reserve.img", reserve_unit)
+        self.assertIn("RequiresMountsFor=/opt", reserve_unit)
+        self.assertIn("Priority=0", reserve_unit)
+        self.assertIn("WantedBy=swap.target", reserve_unit)
+
 
 if __name__ == "__main__":
     unittest.main()
